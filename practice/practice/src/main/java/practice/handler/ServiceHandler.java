@@ -44,7 +44,7 @@ public class ServiceHandler extends ChannelInboundHandlerAdapter {
 //        ByteBuf byteBuf = (ByteBuf) msg;    //여기서 임의의 데이터를 생성?? tcp기반 서버가 보낸 순서대로 바이트를 수신할 수 있게 보장한다.
 //        System.out.println("message : {} " + byteBuf.toString(Charset.defaultCharset()));
         String stringMessage = (String) msg;
-        System.out.println(stringMessage);
+        logger.debug("message : {}", stringMessage);
         messageMapper.save(new Message(stringMessage));
         List<Message> messages = messageMapper.findAll();
 
