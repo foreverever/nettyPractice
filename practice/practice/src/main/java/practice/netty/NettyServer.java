@@ -2,11 +2,8 @@ package practice.netty;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.ChannelPipeline;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
@@ -14,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
-import practice.handler.ServiceHandler;
 
 @Component
 @PropertySource(value = "classpath:/application.properties")    //프로퍼티 설정값 가져오기 (사용하기 위해)
@@ -42,6 +38,7 @@ public class NettyServer {
      */
     @Autowired
     private NettyServerInitializer nettyServerInitializer;
+
     /**
      * Start.
      */
@@ -63,7 +60,7 @@ public class NettyServer {
                     .childHandler(nettyServerInitializer);
 
             ChannelFuture channelFuture = b.bind(tcpPort).sync();   //서버를 비동기식으로 바인딩, sync()은 바인딩이 완료되기를 대기
-            channelFuture.channel().closeFuture().sync();   //채널의 closeFuture을 얻고 완료될 때가지 현재 스레드를 블로킹
+            channelFuture.channel().closeFuture().sync().channel();   //채널의 closeFuture을 얻고 완료될 때가지 현재 스레드를 블로킹 요청기다림
         } catch (InterruptedException e) {
             e.printStackTrace();
         } finally {
