@@ -1,12 +1,9 @@
 package practice.domain;
 
-import org.springframework.data.annotation.Id;
-
 import java.util.Objects;
 
 public class Message {
 
-    @Id
     private long id;
     private String contents;
 

@@ -17,7 +17,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import javax.sql.DataSource;
 
 @Configuration
-@MapperScan(basePackages = "practice")
+@MapperScan(basePackages = "practice/service")
 @PropertySource(value = "classpath:/properties/sqlmap.properties")
 @EnableTransactionManagement
 public class SqlMapperConfig {

@@ -1,1 +1,0 @@
---INSERT INTO MESSAGE (ID, CONTENTS) values (0, 'abc');

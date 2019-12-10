@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import practice.domain.Message;
 import practice.service.MessageMapper;
-
 import java.util.List;
 
 
