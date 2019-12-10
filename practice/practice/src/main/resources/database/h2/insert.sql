@@ -1,1 +1,1 @@
-INSERT INTO MESSAGE (ID, CONTENTS) values (1, 'abc');
+--INSERT INTO MESSAGE (ID, CONTENTS) values (0, 'abc');

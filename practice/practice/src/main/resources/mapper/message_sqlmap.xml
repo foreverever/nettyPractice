@@ -23,7 +23,7 @@
         FROM MESSAGE WHERE ID = #{id}
     </select>
 
-    <insert id="save">
+    <insert id="save" useGeneratedKeys="true">
         INSERT INTO MESSAGE (contents) VALUES (#{contents})
     </insert>
 

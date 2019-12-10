@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import practice.domain.Message;
-import practice.domain.MessageRepository;
+import practice.service.MessageMapper;
 
 import java.util.List;
 
@@ -27,11 +27,8 @@ public class ServiceHandler extends ChannelInboundHandlerAdapter {
 
     private final ChannelGroup channels = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
 
-//    @Resource(name = "messageMapper")
-//    private MessageMapper messageMapper;
-
     @Autowired
-    private MessageRepository messageRepository;
+    private MessageMapper messageMapper;
 
     //소켓채널이 최초 활성화 되었을 때(연결되면) 발생하는 이벤트
     @Override
@@ -48,10 +45,9 @@ public class ServiceHandler extends ChannelInboundHandlerAdapter {
 //        ByteBuf byteBuf = (ByteBuf) msg;    //여기서 임의의 데이터를 생성?? tcp기반 서버가 보낸 순서대로 바이트를 수신할 수 있게 보장한다.
 //        System.out.println("message : {} " + byteBuf.toString(Charset.defaultCharset()));
         String stringMessage = (String) msg;
-        messageRepository.save(new Message(stringMessage));
         System.out.println(stringMessage);
-
-        List<Message> messages = messageRepository.findAll();
+        messageMapper.save(new Message(stringMessage));
+        List<Message> messages = messageMapper.findAll();
 
         for (Message message : messages) {
             System.out.println(message.getId() + " : " + message.getContents());
@@ -64,5 +60,11 @@ public class ServiceHandler extends ChannelInboundHandlerAdapter {
     public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
         super.channelReadComplete(ctx);
         System.out.println("channelReadComplete called!!");
+    }
+
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        logger.error(cause.getMessage(), cause);
+        ctx.close();
     }
 }
