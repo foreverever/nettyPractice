@@ -1,6 +1,4 @@
-package practice.service;
-
-import practice.domain.Message;
+package practice.domain;
 
 import java.util.List;
 

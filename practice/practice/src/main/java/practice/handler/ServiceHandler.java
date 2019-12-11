@@ -9,10 +9,15 @@ import io.netty.util.concurrent.GlobalEventExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 import practice.domain.Message;
-import practice.service.MessageMapper;
+import practice.domain.MessageMapper;
+
+import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -29,11 +34,14 @@ public class ServiceHandler extends ChannelInboundHandlerAdapter {
     @Autowired
     private MessageMapper messageMapper;
 
+    @Autowired
+    private RedisTemplate<String, Object> template;
+
     //소켓채널이 최초 활성화 되었을 때(연결되면) 발생하는 이벤트
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        System.out.println("channelActive called!!");
-//        channels.add(ctx.channel());
+        logger.debug("channelActive is called!!");
+        channels.add(ctx.channel());
     }
 
     //메세지(데이터)가 들어올 때마다 호출된다
@@ -43,22 +51,27 @@ public class ServiceHandler extends ChannelInboundHandlerAdapter {
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
 //        ByteBuf byteBuf = (ByteBuf) msg;    //여기서 임의의 데이터를 생성?? tcp기반 서버가 보낸 순서대로 바이트를 수신할 수 있게 보장한다.
 //        System.out.println("message : {} " + byteBuf.toString(Charset.defaultCharset()));
-        String stringMessage = (String) msg;
-        logger.debug("message : {}", stringMessage);
-        messageMapper.save(new Message(stringMessage));
-        List<Message> messages = messageMapper.findAll();
+        String contents = (String) msg;
+        Message message = new Message(contents);
+        logger.debug("message : {}", message.getContents());
+        logger.debug("messageSize : {}", message.getSize());
+        template.opsForHash().putAll("String.valueOf(message.getId())", message.getHashMapValue());
 
-        for (Message message : messages) {
-            System.out.println(message.getId() + " : " + message.getContents());
-        }
-        channels.writeAndFlush(stringMessage);
 
+//        messageMapper.save(new Message(stringMessage));
+//        List<Message> messages = messageMapper.findAll();
+//
+//        for (Message message : messages) {
+//            logger.debug("message info // id : {} , contents : {}", message.getId(), message.getContents());
+//        }
+        channels.writeAndFlush(contents);
     }
 
     @Override
     public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
         super.channelReadComplete(ctx);
-        System.out.println("channelReadComplete called!!");
+        System.out.println("channelReadComplete is called!!");
+//        ctx.close();
     }
 
     @Override

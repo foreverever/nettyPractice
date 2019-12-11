@@ -40,4 +40,14 @@ public class ServiceHandlerTest {
         inputDate = "hello world";
         System.out.println(Arrays.toString(inputDate.getBytes()));  //아스키코드
     }
+
+    @Test
+    public void timeStamp() {
+        StringBuilder sb = new StringBuilder();
+        System.out.println(sb.length());
+        sb.append("asd");
+        sb.append("qwe");
+        sb.insert(0,sb.length());
+        System.out.println(sb.toString());
+    }
 }

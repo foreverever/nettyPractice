@@ -1,13 +1,23 @@
 package practice.domain;
 
+import org.springframework.data.redis.core.RedisHash;
+
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
+@RedisHash("message")
 public class Message {
 
     private long id;
     private String contents;
 
     public Message(String contents) {
+        this.contents = contents;
+    }
+
+    public Message(long id, String contents) {
+        this.id = id;
         this.contents = contents;
     }
 
@@ -48,5 +58,17 @@ public class Message {
         return "Message{" +
                 "contents='" + contents + '\'' +
                 '}';
+    }
+
+    public int getSize() {
+        return contents.length();
+    }
+
+    public Map<?, ?> getHashMapValue() {
+        Map<String, Object> map = new HashMap<>();
+        //utils로 따로 빼서 상수 정의하던지 해야함
+        map.put("id", this.id);
+        map.put("contents", this.contents);
+        return map;
     }
 }
