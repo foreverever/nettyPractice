@@ -1,4 +1,4 @@
-package practice.handler;
+package practice.netty.handler;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler;
@@ -24,6 +24,7 @@ public class MessageHandler extends ChannelInboundHandlerAdapter {
     Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private final ChannelGroup channels = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
+    private static int totalCnt = 0;
 
     @Autowired
     private MessageMapper messageMapper;
@@ -52,8 +53,12 @@ public class MessageHandler extends ChannelInboundHandlerAdapter {
 //        ByteBuf byteBuf = (ByteBuf) msg;    //tcp기반 서버가 보낸 순서대로 바이트를 수신할 수 있게 보장한다.
 //        System.out.println("message : {} " + byteBuf.toString(Charset.defaultCharset()));
         logger.debug("channelRead is called!!");
+        totalCnt++;
 
-        System.out.println(msg.toString());
+        logger.debug("!!!!!!!!!!!!!name : {}", ctx.name());
+        logger.debug("!!!!!!!!!!!!!handler : {}", ctx.handler());
+        logger.debug("!!!!!!!!!!!!!read : {}", ctx.read());
+        logger.debug("!!!!!!!!!!!!!fireChannel : {}", ctx.fireChannelActive());
         String packet = (String) msg;
         //todo : packet을 유효 데이터 단위로 쪼개야함 (IP Address/Contents/RequestTime)
         Message message = new Message(packet);
@@ -84,6 +89,7 @@ public class MessageHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
         super.channelReadComplete(ctx);
+        logger.debug("totalCnt : {}", totalCnt);
         logger.debug("channelReadComplete is called!!");
     }
 

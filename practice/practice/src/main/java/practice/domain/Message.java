@@ -1,12 +1,9 @@
 package practice.domain;
 
-import org.springframework.data.redis.core.RedisHash;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-@RedisHash("message")
 public class Message {
 
     private long id;
