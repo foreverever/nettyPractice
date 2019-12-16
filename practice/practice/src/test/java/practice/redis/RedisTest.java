@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.test.context.junit4.SpringRunner;
 import practice.domain.Message;
 
@@ -37,9 +38,18 @@ public class RedisTest {
 
     @Test
     public void Redis_해시_저장() {
-        redisTemplate.opsForHash().putAll("hashTestKey", message.getHashMapValue());
+        redisTemplate.opsForHash().putAll("hashTestKey", message.findHashMapValue());
         assertThat(redisTemplate.opsForHash().get("hashTestKey", "id")).isEqualTo(message.getId());
         assertThat(redisTemplate.opsForHash().get("hashTestKey", "contents")).isEqualTo(message.getContents());
         logger.debug("hashValue : {}", redisTemplate.opsForHash().entries("hashTestKey"));
+    }
+
+    @Test
+    public void Redis_Json_저장() {
+        ValueOperations<String, Object> valueOperations = redisTemplate.opsForValue();
+        valueOperations.set("key", message);
+
+        Message readMessage = (Message) valueOperations.get("key");
+        System.out.println(readMessage);
     }
 }

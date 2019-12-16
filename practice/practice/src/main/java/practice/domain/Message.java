@@ -57,11 +57,11 @@ public class Message {
                 '}';
     }
 
-    public int getSize() {
+    public int size() {
         return contents.length();
     }
 
-    public Map<?, ?> getHashMapValue() {
+    public Map<String, Object> findHashMapValue() {
         Map<String, Object> map = new HashMap<>();
         //utils로 따로 빼서 상수 정의하던지 해야함
         map.put("id", this.id);

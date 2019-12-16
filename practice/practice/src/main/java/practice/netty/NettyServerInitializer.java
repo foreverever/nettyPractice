@@ -24,11 +24,12 @@ public class NettyServerInitializer extends ChannelInitializer<SocketChannel> {
 
     @Override
     protected void initChannel(SocketChannel socketChannel) throws Exception {
+        System.out.println("socket!!!!!!!!!!!!! " + socketChannel.toString());
         ChannelPipeline pipeline = socketChannel.pipeline();
 
         pipeline.addLast(new LoggingHandler(LogLevel.INFO));
         pipeline.addLast(new MessageDecoder());
-        pipeline.addLast(DECODER);
+        pipeline.addLast(new StringDecoder());
         pipeline.addLast(messageHandler);
     }
 }

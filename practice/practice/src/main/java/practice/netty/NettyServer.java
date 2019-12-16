@@ -5,8 +5,6 @@ import io.netty.channel.ChannelFuture;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.handler.logging.LogLevel;
-import io.netty.handler.logging.LoggingHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
@@ -29,14 +27,13 @@ public class NettyServer {
     private NettyServerInitializer nettyServerInitializer;
 
     public void start() {
-        EventLoopGroup bossGroup = new NioEventLoopGroup(bossCount);
-        EventLoopGroup workerGroup = new NioEventLoopGroup(workerCount);
+        EventLoopGroup bossGroup = new NioEventLoopGroup();
+        EventLoopGroup workerGroup = new NioEventLoopGroup();
 
         try {
             ServerBootstrap b = new ServerBootstrap();
             b.group(bossGroup, workerGroup)
                     .channel(NioServerSocketChannel.class)                              //서버 소켓 입출력 모드를 NIO로 설정
-                    .handler(new LoggingHandler(LogLevel.INFO))                         //서버 소켓 채널 핸들러 등록
                     .childHandler(nettyServerInitializer);
 
             ChannelFuture channelFuture = b.bind(tcpPort).sync();   //서버를 비동기식으로 바인딩, sync()은 바인딩이 완료되기를 대기
