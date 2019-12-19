@@ -27,21 +27,13 @@ public class RedisTest {
 
     @Before
     public void setUp() throws Exception {
-        message = new Message(0L, "contents");
+        message = new Message(3);
     }
 
     @Test
     public void Redis_문자열_저장() {
-        redisTemplate.opsForValue().set("testKey", message.getContents());
-        assertThat(redisTemplate.opsForValue().get("test")).isEqualTo(message.getContents());
-    }
-
-    @Test
-    public void Redis_해시_저장() {
-        redisTemplate.opsForHash().putAll("hashTestKey", message.findHashMapValue());
-        assertThat(redisTemplate.opsForHash().get("hashTestKey", "id")).isEqualTo(message.getId());
-        assertThat(redisTemplate.opsForHash().get("hashTestKey", "contents")).isEqualTo(message.getContents());
-        logger.debug("hashValue : {}", redisTemplate.opsForHash().entries("hashTestKey"));
+        redisTemplate.opsForValue().set("testKey", message.getContent());
+        assertThat(redisTemplate.opsForValue().get("test")).isEqualTo(message.getContent());
     }
 
     @Test
@@ -51,5 +43,16 @@ public class RedisTest {
 
         Message readMessage = (Message) valueOperations.get("key");
         System.out.println(readMessage);
+    }
+
+    @Test
+    public void Redis_모든값_읽기() {
+        ValueOperations<String, Object> valueOperations = redisTemplate.opsForValue();
+        int cnt = 100;
+        while (cnt > 0) {
+            Message readMessage = (Message) valueOperations.get(Integer.toString(cnt));
+            System.out.println(cnt + " : " + readMessage);
+            cnt--;
+        }
     }
 }

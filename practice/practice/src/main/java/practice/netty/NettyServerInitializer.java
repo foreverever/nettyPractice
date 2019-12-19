@@ -7,29 +7,34 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import practice.netty.handler.MessageDecoder;
 import practice.netty.handler.MessageHandler;
+import practice.netty.decoder.PacketLengthCheckDecoder;
+import practice.netty.decoder.StatusCodeCheckDecoder;
 
 @Component
 @ChannelHandler.Sharable
 public class NettyServerInitializer extends ChannelInitializer<SocketChannel> {
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private static final StringDecoder DECODER = new StringDecoder();
-    private static final MessageDecoder MESSAGE_DECODER = new MessageDecoder();
+    private static final PacketLengthCheckDecoder MESSAGE_DECODER = new PacketLengthCheckDecoder();
 
     @Autowired
     private MessageHandler messageHandler;
 
     @Override
-    protected void initChannel(SocketChannel socketChannel) throws Exception {
-        System.out.println("socket!!!!!!!!!!!!! " + socketChannel.toString());
+    protected void initChannel(SocketChannel socketChannel) {
+        logger.debug("channel!!!!! : {}", socketChannel.toString());
         ChannelPipeline pipeline = socketChannel.pipeline();
 
         pipeline.addLast(new LoggingHandler(LogLevel.INFO));
-        pipeline.addLast(new MessageDecoder());
+        pipeline.addLast(new PacketLengthCheckDecoder());
         pipeline.addLast(new StringDecoder());
+        pipeline.addLast(new StatusCodeCheckDecoder());
         pipeline.addLast(messageHandler);
     }
 }

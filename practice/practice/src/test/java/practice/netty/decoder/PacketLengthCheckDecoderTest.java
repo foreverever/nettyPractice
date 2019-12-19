@@ -1,4 +1,4 @@
-package practice.netty.handler;
+package practice.netty.decoder;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.PooledByteBufAllocator;
@@ -8,11 +8,11 @@ import org.junit.Test;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 
-public class MessageDecoderTest {
+public class PacketLengthCheckDecoderTest {
 
     private ByteBuf byteBuf;
     private String inputData;
-    private MessageDecoder messageDecoder = new MessageDecoder();
+    private PacketLengthCheckDecoder packetLengthCheckDecoder = new PacketLengthCheckDecoder();
 
     @Before
     public void setUp() throws Exception {
@@ -25,7 +25,7 @@ public class MessageDecoderTest {
         byteBuf.capacity(inputData.length());
         byteBuf.writeBytes(inputData.getBytes());
 
-        int packLength = messageDecoder.calcPacketLength(byteBuf);
+        int packLength = packetLengthCheckDecoder.calcPacketLength(byteBuf);
         assertThat(packLength).isEqualTo(10);
     }
 
@@ -35,7 +35,7 @@ public class MessageDecoderTest {
         byteBuf.capacity(inputData.length());
         byteBuf.writeBytes(inputData.getBytes());
 
-        int packetLength = messageDecoder.calcPacketLength(byteBuf);
+        int packetLength = packetLengthCheckDecoder.calcPacketLength(byteBuf);
         assertThat(packetLength).isEqualTo(5);
     }
 
@@ -45,7 +45,7 @@ public class MessageDecoderTest {
         byteBuf.capacity(inputData.length());
         byteBuf.writeBytes(inputData.getBytes());
 
-        int packetLength = messageDecoder.calcPacketLength(byteBuf);
+        int packetLength = packetLengthCheckDecoder.calcPacketLength(byteBuf);
         assertThat(packetLength).isEqualTo(0);
     }
 }

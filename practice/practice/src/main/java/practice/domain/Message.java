@@ -1,40 +1,58 @@
 package practice.domain;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-public class Message {
+public class Message implements Serializable {
 
-    private long id;
-    private String contents;
+    private String requestIpAddress;
+    private int content;
 
-    public Message(String contents) {
-        this.contents = contents;
+    @JsonFormat(pattern = "uuuu-MM-dd'T'HH:mm:ss.SSS")
+    @DateTimeFormat(pattern = "uuuu-MM-dd'T'HH:mm:ss.SSS")
+    private LocalDateTime createDate;
+
+    public Message(String requestIpAddress, int content, LocalDateTime createDate) {
+        this.requestIpAddress = requestIpAddress;
+        this.content = content;
+        this.createDate = createDate;
     }
 
-    public Message(long id, String contents) {
-        this.id = id;
-        this.contents = contents;
+    public Message(int content) {
+        this.content = content;
+    }
+
+    public String getRequestIpAddress() {
+        return requestIpAddress;
+    }
+
+    public void setRequestIpAddress(String requestIpAddress) {
+        this.requestIpAddress = requestIpAddress;
     }
 
     public Message() {
     }
 
-    public String getContents() {
-        return contents;
+    public int getContent() {
+        return content;
     }
 
-    public void setContents(String contents) {
-        this.contents = contents;
+    public void setContent(int content) {
+        this.content = content;
     }
 
-    public long getId() {
-        return id;
+    public LocalDateTime getCreateDate() {
+        return createDate;
     }
 
-    public void setId(long id) {
-        this.id = id;
+    public void setCreateDate(LocalDateTime createDate) {
+        this.createDate = createDate;
     }
 
     @Override
@@ -42,30 +60,22 @@ public class Message {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Message message = (Message) o;
-        return Objects.equals(contents, message.contents);
+        return content == message.content &&
+                Objects.equals(requestIpAddress, message.requestIpAddress) &&
+                Objects.equals(createDate, message.createDate);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(contents);
+        return Objects.hash(requestIpAddress, content, createDate);
     }
 
     @Override
     public String toString() {
         return "Message{" +
-                "contents='" + contents + '\'' +
+                "requestIpAddress='" + requestIpAddress + '\'' +
+                ", content=" + content +
+                ", createDate=" + createDate +
                 '}';
-    }
-
-    public int size() {
-        return contents.length();
-    }
-
-    public Map<String, Object> findHashMapValue() {
-        Map<String, Object> map = new HashMap<>();
-        //utils로 따로 빼서 상수 정의하던지 해야함
-        map.put("id", this.id);
-        map.put("contents", this.contents);
-        return map;
     }
 }
