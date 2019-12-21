@@ -1,6 +1,7 @@
 package practice.netty;
 
 import io.netty.channel.ChannelHandler;
+import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
@@ -11,7 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import practice.netty.handler.MessageHandler;
 import practice.netty.decoder.PacketLengthCheckDecoder;
 import practice.netty.decoder.StatusCodeCheckDecoder;
 
@@ -20,11 +20,10 @@ import practice.netty.decoder.StatusCodeCheckDecoder;
 public class NettyServerInitializer extends ChannelInitializer<SocketChannel> {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    private static final StringDecoder DECODER = new StringDecoder();
     private static final PacketLengthCheckDecoder MESSAGE_DECODER = new PacketLengthCheckDecoder();
 
     @Autowired
-    private MessageHandler messageHandler;
+    private ChannelInboundHandlerAdapter messageHandler;
 
     @Override
     protected void initChannel(SocketChannel socketChannel) {

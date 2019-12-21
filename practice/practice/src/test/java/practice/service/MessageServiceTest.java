@@ -8,15 +8,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import practice.domain.Message;
 
-import java.time.LocalDateTime;
-
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class MessageServiceTest {
 
-    private static final Message testMessage = new Message("127.0.0.0", 1, LocalDateTime.MAX);
+    private static final Message testMessage = new Message("127.0.0.0", 1);
     private static String testKey = "1000000";
 
     @Autowired
@@ -24,14 +22,14 @@ public class MessageServiceTest {
 
     @Before
     public void setUp() throws Exception {
-        messageService.add(testMessage, testKey);
+        testMessage.setId(testKey);
+        messageService.add(testMessage);
     }
 
     @Test
     public void findMessage() {
-        Message message = messageService.findMessage(testKey);
+        Message message = messageService.findById(testKey);
         assertThat(message.getContent()).isEqualTo(1);
         assertThat(message.getRequestIpAddress()).isEqualTo("127.0.0.0");
-        assertThat(message.getCreateDate()).isEqualTo(LocalDateTime.MAX);
     }
 }

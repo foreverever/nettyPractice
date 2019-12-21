@@ -1,16 +1,19 @@
 package practice.domain;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.redis.core.RedisHash;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 
+@RedisHash("message")
 public class Message implements Serializable {
 
+    @Id
+    private String id;
     private String requestIpAddress;
     private int content;
 
@@ -18,14 +21,29 @@ public class Message implements Serializable {
     @DateTimeFormat(pattern = "uuuu-MM-dd'T'HH:mm:ss.SSS")
     private LocalDateTime createDate;
 
+    public Message(String id, String requestIpAddress, int content, LocalDateTime createDate) {
+        this.id = id;
+        this.requestIpAddress = requestIpAddress;
+        this.content = content;
+        this.createDate = createDate;
+    }
+
     public Message(String requestIpAddress, int content, LocalDateTime createDate) {
         this.requestIpAddress = requestIpAddress;
         this.content = content;
         this.createDate = createDate;
     }
 
-    public Message(int content) {
-        this.content = content;
+    public Message(String requestIpAddress, int content) {
+        this("0", requestIpAddress, content, LocalDateTime.now());
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getRequestIpAddress() {
@@ -60,20 +78,22 @@ public class Message implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Message message = (Message) o;
-        return content == message.content &&
+        return id == message.id &&
+                content == message.content &&
                 Objects.equals(requestIpAddress, message.requestIpAddress) &&
                 Objects.equals(createDate, message.createDate);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(requestIpAddress, content, createDate);
+        return Objects.hash(id, requestIpAddress, content, createDate);
     }
 
     @Override
     public String toString() {
         return "Message{" +
-                "requestIpAddress='" + requestIpAddress + '\'' +
+                "id=" + id +
+                ", requestIpAddress='" + requestIpAddress + '\'' +
                 ", content=" + content +
                 ", createDate=" + createDate +
                 '}';

@@ -2,10 +2,7 @@ package practice.netty.handler;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelHandler;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.channel.*;
 import io.netty.channel.group.ChannelGroup;
 import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.util.concurrent.GlobalEventExecutor;
@@ -25,7 +22,7 @@ import static practice.support.StatusCode.OACK;
 
 @Component
 @ChannelHandler.Sharable
-public class MessageHandler extends ChannelInboundHandlerAdapter {
+public class MessageHandler extends SimpleChannelInboundHandler<String> {
 
     Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -44,9 +41,7 @@ public class MessageHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
         System.out.println("Active!!!!!!!!!!!!!!!!");
-        ByteBuf oack = ByteBufAllocator.DEFAULT.buffer();
-        oack.writeBytes(("0004OACK").getBytes());
-        ctx.writeAndFlush(oack);
+        ctx.writeAndFlush(makeResponse("0004OACK"));
         channels.add(ctx.channel());
     }
 
@@ -60,30 +55,20 @@ public class MessageHandler extends ChannelInboundHandlerAdapter {
     //데이터 수신 이벤트 처리 메서드, 클라이언트로부터 데이터 수신이 이루어지는 경우 네티가 자동적으로 호출
     //데이터 로직 처리
     @Override
-    public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+    protected void channelRead0(ChannelHandlerContext ctx, String content) {
         System.out.println("startTime" + LocalDateTime.now());
-        System.out.println(msg);
+        System.out.println(content);
         callCnt();
-        String content = (String) msg;
         Message message = new Message(findIpAddress(ctx.channel()), Integer.parseInt(content), LocalDateTime.now());
         logger.debug("message information : {}", message);
 
-        //메세지 전달
-        ByteBuf oack = ByteBufAllocator.DEFAULT.buffer();
-        ctx.writeAndFlush(oack.writeBytes((PACKET_LENGTH + OACK.name()).getBytes()));
-        messageService.add(message, Integer.toString(handlerCnt));
-    }
-
-
-    private String findIpAddress(Channel channel) {
-        InetSocketAddress socketAddress = (InetSocketAddress) channel.remoteAddress();
-        return socketAddress.getAddress().getHostAddress();
+        ctx.writeAndFlush(makeResponse(PACKET_LENGTH + OACK.name()));
+        messageService.add(message);
     }
 
     @Override
     public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
         System.out.println("id!!!! : " + ctx.channel().id());
-        ctx.flush();
         super.channelReadComplete(ctx);
         logger.debug("messageHandlerCnt : {}", handlerCnt);
     }
@@ -91,7 +76,18 @@ public class MessageHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
         logger.error(cause.getMessage(), cause);
+        ctx.writeAndFlush(makeResponse("0004NACK"));
         ctx.close();
+    }
+
+    private ByteBuf makeResponse(String response) {
+        return ByteBufAllocator.DEFAULT.buffer()
+                .writeBytes(response.getBytes());
+    }
+
+    private String findIpAddress(Channel channel) {
+        InetSocketAddress socketAddress = (InetSocketAddress) channel.remoteAddress();
+        return socketAddress.getAddress().getHostAddress();
     }
 
     public synchronized void callCnt() {
