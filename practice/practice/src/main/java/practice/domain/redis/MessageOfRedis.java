@@ -20,19 +20,23 @@ public class MessageOfRedis implements Serializable {
 
     @JsonFormat(pattern = "uuuu-MM-dd'T'HH:mm:ss.SSS")
     @DateTimeFormat(pattern = "uuuu-MM-dd'T'HH:mm:ss.SSS")
-    private LocalDateTime createDate;
+    private LocalDateTime createTime;
 
-    public MessageOfRedis(String redisKey, String requestIpAddress, int content, LocalDateTime createDate) {
+    @JsonFormat(pattern = "uuuu-MM-dd'T'HH:mm:ss.SSS")
+    @DateTimeFormat(pattern = "uuuu-MM-dd'T'HH:mm:ss.SSS")
+    private LocalDateTime processingTime;
+
+    public MessageOfRedis(String redisKey, String requestIpAddress, int content, LocalDateTime createTime) {
         this.redisKey = redisKey;
         this.requestIpAddress = requestIpAddress;
         this.content = content;
-        this.createDate = createDate;
+        this.createTime = createTime;
     }
 
-    public MessageOfRedis(String requestIpAddress, int content, LocalDateTime createDate) {
+    public MessageOfRedis(String requestIpAddress, int content, LocalDateTime createTime) {
         this.requestIpAddress = requestIpAddress;
         this.content = content;
-        this.createDate = createDate;
+        this.createTime = createTime;
     }
 
     public MessageOfRedis(String requestIpAddress, int content) {
@@ -66,41 +70,51 @@ public class MessageOfRedis implements Serializable {
         this.content = content;
     }
 
-    public LocalDateTime getCreateDate() {
-        return createDate;
+    public LocalDateTime getCreateTime() {
+        return createTime;
     }
 
-    public void setCreateDate(LocalDateTime createDate) {
-        this.createDate = createDate;
+    public void setCreateTime(LocalDateTime createTime) {
+        this.createTime = createTime;
+    }
+
+    public LocalDateTime getProcessingTime() {
+        return processingTime;
+    }
+
+    public void setProcessingTime(LocalDateTime processingTime) {
+        this.processingTime = processingTime;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        MessageOfRedis messageOfRedis = (MessageOfRedis) o;
-        return redisKey == messageOfRedis.redisKey &&
-                content == messageOfRedis.content &&
-                Objects.equals(requestIpAddress, messageOfRedis.requestIpAddress) &&
-                Objects.equals(createDate, messageOfRedis.createDate);
+        MessageOfRedis that = (MessageOfRedis) o;
+        return content == that.content &&
+                Objects.equals(redisKey, that.redisKey) &&
+                Objects.equals(requestIpAddress, that.requestIpAddress) &&
+                Objects.equals(createTime, that.createTime) &&
+                Objects.equals(processingTime, that.processingTime);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(redisKey, requestIpAddress, content, createDate);
+        return Objects.hash(redisKey, requestIpAddress, content, createTime, processingTime);
     }
 
     @Override
     public String toString() {
-        return "Message{" +
-                "redisKey=" + redisKey +
+        return "MessageOfRedis{" +
+                "redisKey='" + redisKey + '\'' +
                 ", requestIpAddress='" + requestIpAddress + '\'' +
                 ", content=" + content +
-                ", createDate=" + createDate +
+                ", createTime=" + createTime +
+                ", processingTime=" + processingTime +
                 '}';
     }
 
     public Message createMessage() {
-        return new Message(requestIpAddress, content, createDate);
+        return new Message(requestIpAddress, content, createTime, processingTime);
     }
 }

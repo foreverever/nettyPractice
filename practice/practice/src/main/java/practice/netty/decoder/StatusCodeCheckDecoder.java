@@ -42,7 +42,7 @@ public class StatusCodeCheckDecoder extends MessageToMessageDecoder<String> {
         //약속된 Status Code가 아닌 경우
         else if (statusCode == NACK) {
             exceptionCaught(channelHandlerContext,
-                    new NotValidStatusCodeException("올바른 Status Code 가 아닙니다."));
+                    new NotValidStatusCodeException("NotValidStatusCode"));
         }
         //todo 조작 클라이언트에서 FAKE/0002/0150 -->2번 150개 조작, 식으로 패킷 구조를 추가해야 할 듯? 굳이 조작클라이언트가 150번 요청을 하는것보다 서버에서 150번 처리하는 게 낫자나?
         else if (statusCode == FAKE) {

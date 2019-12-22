@@ -5,6 +5,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import practice.exception.NotValidLengthFiled;
 
 import java.nio.charset.Charset;
 import java.util.List;
@@ -17,7 +18,7 @@ public class PacketLengthCheckDecoder extends ByteToMessageDecoder {
     private int decodeCnt = 0;
 
     @Override
-    protected void decode(ChannelHandlerContext channelHandlerContext, ByteBuf byteBuf, List<Object> list) {
+    protected void decode(ChannelHandlerContext ctx, ByteBuf byteBuf, List<Object> list) throws Exception {
         logger.debug("decode byteBuf : {}", byteBuf.toString(Charset.defaultCharset()));
 
         //length 필드가 짤려서 오는 경우(즉 4바이트를 넘지 못하는 경우 재요청 받야아 한다)
@@ -26,7 +27,7 @@ public class PacketLengthCheckDecoder extends ByteToMessageDecoder {
             return;
         }
 
-        int packetLength = calcPacketLength(byteBuf);
+        int packetLength = calcPacketLength(byteBuf, ctx);
 
         if (byteBuf.readableBytes() < packetLength) {
             byteBuf.resetReaderIndex();
@@ -40,8 +41,20 @@ public class PacketLengthCheckDecoder extends ByteToMessageDecoder {
         logger.debug("decodeCnt : {}", decodeCnt);
     }
 
-    int calcPacketLength(ByteBuf byteBuf) {
+    int calcPacketLength(ByteBuf byteBuf, ChannelHandlerContext ctx) throws Exception {
         String length = byteBuf.readBytes(PACKET_LENGTH_FIELD).toString(Charset.defaultCharset());
+        if (isNotValidLength(length)) {
+            exceptionCaught(ctx, new NotValidLengthFiled("NotValidDataLength"));
+        }
         return Integer.parseInt(length);
+    }
+
+    private boolean isNotValidLength(String length) {
+        try {
+            Integer.parseInt(length);
+            return false;
+        } catch (NumberFormatException e) {
+            return true;
+        }
     }
 }

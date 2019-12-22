@@ -38,15 +38,12 @@ public class RedisScheduler {
         List<Message> messages = new ArrayList<>();
 
         for (MessageOfRedis messageOfRedis : messagesOfRedis) {
-//            messages.add(new Message(messageOfRedis));
             messages.add(messageOfRedis.createMessage());
             keys.add(messageOfRedis.getRedisKey());
             logger.debug("messageAll : {}", messageOfRedis.toString());
         }
-        messageRepository.saveAll(messages);
 
-        //todo saveAll해서 RDB에 저장기능 구현
-        //todo RDB 동기화후 레디스에서 삭제
+        messageRepository.saveAll(messages);
         deleteRedisData(keys);
         long end = System.currentTimeMillis();
 

@@ -2,7 +2,6 @@ package practice.domain;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springframework.format.annotation.DateTimeFormat;
-import practice.domain.redis.MessageOfRedis;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -21,22 +20,18 @@ public class Message {
 
     @JsonFormat(pattern = "uuuu-MM-dd'T'HH:mm:ss.SSS")
     @DateTimeFormat(pattern = "uuuu-MM-dd'T'HH:mm:ss.SSS")
-    private LocalDateTime createDate;
+    private LocalDateTime createTime;
 
-    //객체지향 관점에서 getter를 지양
-    public Message(MessageOfRedis messageOfRedis) {
-        this.requestIpAddress = messageOfRedis.getRequestIpAddress();
-        this.content = messageOfRedis.getContent();
-        this.createDate = messageOfRedis.getCreateDate();
-    }
+    @JsonFormat(pattern = "uuuu-MM-dd'T'HH:mm:ss.SSS")
+    @DateTimeFormat(pattern = "uuuu-MM-dd'T'HH:mm:ss.SSS")
+    private LocalDateTime processingTime;
 
-    public Message() {
-    }
-
-    public Message(String requestIpAddress, int content, LocalDateTime createDate) {
+    public Message(String requestIpAddress, int content, LocalDateTime createTime, LocalDateTime processingTime) {
         this.requestIpAddress = requestIpAddress;
         this.content = content;
-        this.createDate = createDate;
+        this.createTime = createTime;
+        this.processingTime = processingTime;
+
     }
 
     public long getId() {
@@ -63,12 +58,20 @@ public class Message {
         this.content = content;
     }
 
-    public LocalDateTime getCreateDate() {
-        return createDate;
+    public LocalDateTime getCreateTime() {
+        return createTime;
     }
 
-    public void setCreateDate(LocalDateTime createDate) {
-        this.createDate = createDate;
+    public void setCreateTime(LocalDateTime createTime) {
+        this.createTime = createTime;
+    }
+
+    public LocalDateTime getProcessingTime() {
+        return processingTime;
+    }
+
+    public void setProcessingTime(LocalDateTime processingTime) {
+        this.processingTime = processingTime;
     }
 
     @Override
@@ -79,12 +82,13 @@ public class Message {
         return id == message.id &&
                 content == message.content &&
                 Objects.equals(requestIpAddress, message.requestIpAddress) &&
-                Objects.equals(createDate, message.createDate);
+                Objects.equals(createTime, message.createTime) &&
+                Objects.equals(processingTime, message.processingTime);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, requestIpAddress, content, createDate);
+        return Objects.hash(id, requestIpAddress, content, createTime, processingTime);
     }
 
     @Override
@@ -93,7 +97,8 @@ public class Message {
                 "id=" + id +
                 ", requestIpAddress='" + requestIpAddress + '\'' +
                 ", content=" + content +
-                ", createDate=" + createDate +
+                ", createDate=" + createTime +
+                ", processingTime=" + processingTime +
                 '}';
     }
 }

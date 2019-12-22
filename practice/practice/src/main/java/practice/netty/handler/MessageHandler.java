@@ -1,7 +1,5 @@
 package practice.netty.handler;
 
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufAllocator;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
@@ -19,6 +17,7 @@ import practice.service.MessageService;
 import java.net.InetSocketAddress;
 import java.time.LocalDateTime;
 
+import static practice.support.StatusCode.NACK;
 import static practice.support.StatusCode.OACK;
 
 @Component
@@ -39,7 +38,7 @@ public class MessageHandler extends SimpleChannelInboundHandler<String> {
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
         System.out.println("Active!!!!!!!!!!!!!!!!");
-        ctx.writeAndFlush(makeResponse("0004OACK"));
+        ctx.write("0004OACK");
         channels.add(ctx.channel());
     }
 
@@ -60,27 +59,24 @@ public class MessageHandler extends SimpleChannelInboundHandler<String> {
         MessageOfRedis messageOfRedis = new MessageOfRedis(findIpAddress(ctx.channel()), Integer.parseInt(content), LocalDateTime.now());
         logger.debug("messageOfRedis information : {}", messageOfRedis);
 
-        ctx.writeAndFlush(makeResponse(PACKET_LENGTH + OACK.name()));
+        ctx.write(PACKET_LENGTH + OACK.name());
         messageService.add(messageOfRedis);
     }
 
     @Override
     public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
-        System.out.println("id!!!! : " + ctx.channel().id());
         super.channelReadComplete(ctx);
         logger.debug("messageHandlerCnt : {}", handlerCnt);
     }
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
+        String response = NACK.name() + cause.getMessage();
+        //todo 하드코딩 수정필요
+        response = "00" + response.length() + response;
         logger.error(cause.getMessage(), cause);
-        ctx.writeAndFlush(makeResponse("0004NACK"));
+        ctx.writeAndFlush(response);
         ctx.close();
-    }
-
-    private ByteBuf makeResponse(String response) {
-        return ByteBufAllocator.DEFAULT.buffer()
-                .writeBytes(response.getBytes());
     }
 
     private String findIpAddress(Channel channel) {

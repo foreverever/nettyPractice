@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import practice.netty.decoder.PacketLengthCheckDecoder;
 import practice.netty.decoder.StatusCodeCheckDecoder;
+import practice.netty.handler.SendHandler;
 
 @Component
 @ChannelHandler.Sharable
@@ -30,6 +31,7 @@ public class NettyServerInitializer extends ChannelInitializer<SocketChannel> {
         logger.debug("channel!!!!! : {}", socketChannel.toString());
         ChannelPipeline pipeline = socketChannel.pipeline();
 
+        pipeline.addLast(new SendHandler());
         pipeline.addLast(new LoggingHandler(LogLevel.INFO));
         pipeline.addLast(new PacketLengthCheckDecoder());
         pipeline.addLast(new StringDecoder());
