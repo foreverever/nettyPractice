@@ -6,9 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import practice.configuration.redis.RedisRepository;
+import practice.domain.redis.RedisRepository;
 import practice.domain.Message;
-import practice.service.MessageService;
+import practice.domain.redis.MessageOfRedis;
+import practice.domain.MessageRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,18 +25,25 @@ public class RedisScheduler {
     @Autowired
     private RedisRepository redisRepository;
 
+    @Autowired
+    private MessageRepository messageRepository;
+
     @Scheduled(fixedRateString = "${batch.time}")
     public void syncRedisAndMariaDB() {
         long start = System.currentTimeMillis();
         logger.debug("스케줄러 작동!!!!");
 
-        List<Message> messages = StreamSupport.stream(redisRepository.findAll().spliterator(), false).collect(Collectors.toList());
+        List<MessageOfRedis> messagesOfRedis = StreamSupport.stream(redisRepository.findAll().spliterator(), false).collect(Collectors.toList());
         List<String> keys = new ArrayList<>();
+        List<Message> messages = new ArrayList<>();
 
-        for (Message message : messages) {
-            keys.add(message.getId());
-            logger.debug("messageAll : {}", message.toString());
+        for (MessageOfRedis messageOfRedis : messagesOfRedis) {
+//            messages.add(new Message(messageOfRedis));
+            messages.add(messageOfRedis.createMessage());
+            keys.add(messageOfRedis.getRedisKey());
+            logger.debug("messageAll : {}", messageOfRedis.toString());
         }
+        messageRepository.saveAll(messages);
 
         //todo saveAll해서 RDB에 저장기능 구현
         //todo RDB 동기화후 레디스에서 삭제

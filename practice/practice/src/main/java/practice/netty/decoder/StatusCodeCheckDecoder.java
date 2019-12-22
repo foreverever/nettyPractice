@@ -5,8 +5,8 @@ import io.netty.handler.codec.MessageToMessageDecoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import practice.configuration.redis.RedisRepository;
-import practice.domain.Message;
+import practice.domain.redis.RedisRepository;
+import practice.domain.redis.MessageOfRedis;
 import practice.exception.NotValidStatusCodeException;
 import practice.support.StatusCode;
 
@@ -48,10 +48,10 @@ public class StatusCodeCheckDecoder extends MessageToMessageDecoder<String> {
         else if (statusCode == FAKE) {
             int fakeCount = Integer.parseInt(packet.substring(STATUS_CODE_FIELD, STATUS_CODE_FIELD + 4));
             String content = packet.substring(FAKE_COUNT_FIELD, STATUS_CODE_FIELD + 4);
-            Message fakeMessage = new Message(makeRandomIpAddress(new Random()), Integer.parseInt(content), LocalDateTime.now());
+            MessageOfRedis fakeMessageOfRedis = new MessageOfRedis(makeRandomIpAddress(new Random()), Integer.parseInt(content), LocalDateTime.now());
 
             for (int i = 0; i < fakeCount; i++) {
-                redisRepository.save(fakeMessage);
+                redisRepository.save(fakeMessageOfRedis);
             }
         }
     }

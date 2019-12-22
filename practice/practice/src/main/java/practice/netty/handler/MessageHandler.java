@@ -2,7 +2,10 @@ package practice.netty.handler;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
-import io.netty.channel.*;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelHandler;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.group.ChannelGroup;
 import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.util.concurrent.GlobalEventExecutor;
@@ -10,15 +13,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import practice.domain.Message;
-import practice.domain.MessageMapper;
+import practice.domain.redis.MessageOfRedis;
 import practice.service.MessageService;
 
 import java.net.InetSocketAddress;
 import java.time.LocalDateTime;
 
 import static practice.support.StatusCode.OACK;
-
 
 @Component
 @ChannelHandler.Sharable
@@ -30,9 +31,6 @@ public class MessageHandler extends SimpleChannelInboundHandler<String> {
     private static final String PACKET_LENGTH = "0004";
 
     private int handlerCnt = 0;
-
-    @Autowired
-    private MessageMapper messageMapper;
 
     @Autowired
     private MessageService messageService;
@@ -59,11 +57,11 @@ public class MessageHandler extends SimpleChannelInboundHandler<String> {
         System.out.println("startTime" + LocalDateTime.now());
         System.out.println(content);
         callCnt();
-        Message message = new Message(findIpAddress(ctx.channel()), Integer.parseInt(content), LocalDateTime.now());
-        logger.debug("message information : {}", message);
+        MessageOfRedis messageOfRedis = new MessageOfRedis(findIpAddress(ctx.channel()), Integer.parseInt(content), LocalDateTime.now());
+        logger.debug("messageOfRedis information : {}", messageOfRedis);
 
         ctx.writeAndFlush(makeResponse(PACKET_LENGTH + OACK.name()));
-        messageService.add(message);
+        messageService.add(messageOfRedis);
     }
 
     @Override

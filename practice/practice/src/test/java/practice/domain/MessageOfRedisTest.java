@@ -4,7 +4,7 @@ import org.junit.Test;
 
 import java.time.LocalDateTime;
 
-public class MessageTest {
+public class MessageOfRedisTest {
 
     @Test
     public void 현재시간() {

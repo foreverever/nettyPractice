@@ -10,10 +10,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.test.context.junit4.SpringRunner;
-import practice.configuration.redis.RedisRepository;
-import practice.domain.Message;
+import practice.domain.redis.RedisRepository;
+import practice.domain.redis.MessageOfRedis;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,28 +30,28 @@ public class RedisTest {
     @Autowired
     private RedisRepository redisRepository;
 
-    private Message testMessage1;
-    private Message testMessage2;
+    private MessageOfRedis testMessageOfRedis1;
+    private MessageOfRedis testMessageOfRedis2;
 
     @Before
     public void setUp() throws Exception {
-        testMessage1 = new Message("127.0.0.0", 1);
-        testMessage2 = new Message("127.0.0.1", 2);
+        testMessageOfRedis1 = new MessageOfRedis("127.0.0.0", 1);
+        testMessageOfRedis2 = new MessageOfRedis("127.0.0.1", 2);
     }
 
     @Test
     public void Redis_문자열_저장() {
-        redisTemplate.opsForValue().set("testKey", testMessage1.getContent());
-        assertThat(redisTemplate.opsForValue().get("test")).isEqualTo(testMessage1.getContent());
+        redisTemplate.opsForValue().set("testKey", testMessageOfRedis1.getContent());
+        assertThat(redisTemplate.opsForValue().get("testKey")).isEqualTo(testMessageOfRedis1.getContent());
     }
 
     @Test
     public void Redis_Json_저장() {
         ValueOperations<String, Object> valueOperations = redisTemplate.opsForValue();
-        valueOperations.set("key", testMessage1);
+        valueOperations.set("key", testMessageOfRedis1);
 
-        Message readMessage = (Message) valueOperations.get("key");
-        System.out.println(readMessage);
+        MessageOfRedis readMessageOfRedis = (MessageOfRedis) valueOperations.get("key");
+        System.out.println(readMessageOfRedis);
     }
 
     @Test
@@ -65,17 +64,17 @@ public class RedisTest {
 //            cnt--;
 //        }
 //        System.out.println(redisRepository.findById("1"));
-        List<Message> messageList = (ArrayList<Message>) redisRepository.findAll();
-        for (Message message1 : messageList) {
-            System.out.println(message1);
+        List<MessageOfRedis> messageOfRedisList = (ArrayList<MessageOfRedis>) redisRepository.findAll();
+        for (MessageOfRedis messageOfRedis1 : messageOfRedisList) {
+            System.out.println(messageOfRedis1);
         }
     }
 
     @Test
     public void RedisRepository_추가() {
-        testMessage2.setId("1");
-        redisRepository.save(testMessage1);
-        redisRepository.save(testMessage2);
+        testMessageOfRedis2.setRedisKey("1");
+        redisRepository.save(testMessageOfRedis1);
+        redisRepository.save(testMessageOfRedis2);
         System.out.println(redisRepository.findById("0"));
     }
 

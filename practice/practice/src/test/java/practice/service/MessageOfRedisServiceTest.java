@@ -6,15 +6,15 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
-import practice.domain.Message;
+import practice.domain.redis.MessageOfRedis;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class MessageServiceTest {
+public class MessageOfRedisServiceTest {
 
-    private static final Message testMessage = new Message("127.0.0.0", 1);
+    private static final MessageOfRedis TEST_MESSAGE_REDIS = new MessageOfRedis("127.0.0.0", 1);
     private static String testKey = "1000000";
 
     @Autowired
@@ -22,14 +22,14 @@ public class MessageServiceTest {
 
     @Before
     public void setUp() throws Exception {
-        testMessage.setId(testKey);
-        messageService.add(testMessage);
+        TEST_MESSAGE_REDIS.setRedisKey(testKey);
+        messageService.add(TEST_MESSAGE_REDIS);
     }
 
     @Test
     public void findMessage() {
-        Message message = messageService.findById(testKey);
-        assertThat(message.getContent()).isEqualTo(1);
-        assertThat(message.getRequestIpAddress()).isEqualTo("127.0.0.0");
+        MessageOfRedis messageOfRedis = messageService.findById(testKey);
+        assertThat(messageOfRedis.getContent()).isEqualTo(1);
+        assertThat(messageOfRedis.getRequestIpAddress()).isEqualTo("127.0.0.0");
     }
 }

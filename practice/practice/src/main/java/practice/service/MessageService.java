@@ -2,8 +2,8 @@ package practice.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import practice.configuration.redis.RedisRepository;
-import practice.domain.Message;
+import practice.domain.redis.RedisRepository;
+import practice.domain.redis.MessageOfRedis;
 
 @Component
 public class MessageService {
@@ -11,11 +11,11 @@ public class MessageService {
     @Autowired
     private RedisRepository redisRepository;
 
-    public void add(Message message) {
-        redisRepository.save(message);
+    public void add(MessageOfRedis messageOfRedis) {
+        redisRepository.save(messageOfRedis);
     }
 
-    public Message findById(String id) {
+    public MessageOfRedis findById(String id) {
         return redisRepository.findById(id)
                 .orElseThrow(NullPointerException::new);
     }
