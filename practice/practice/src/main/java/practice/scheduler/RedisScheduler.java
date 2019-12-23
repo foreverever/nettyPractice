@@ -4,13 +4,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.data.redis.core.ListOperations;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import practice.domain.Message;
-import practice.domain.MessageRepository;
+import practice.service.MessageService;
 
-import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,17 +19,14 @@ public class RedisScheduler {
     Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
-    private MessageRepository messageRepository;
-
-    @Resource(name = "redisTemplate")
-    private ListOperations<String, Message> listOperations;
+    private MessageService messageService;
 
     @Scheduled(fixedRateString = "${batch.time}")
     public void syncRedisAndMariaDB() {
         long start = System.currentTimeMillis();
         logger.debug("스케줄러 작동!!!!");
 
-        List<Message> messagesOfRedis = listOperations.range("messages", 0, listOperations.size("messages"));
+        List<Message> messagesOfRedis = messageService.range("messages", 0, messageService.size("messages"));
         List<Message> messages = new ArrayList<>();
 
         for (Message message : messagesOfRedis) {
@@ -40,7 +35,7 @@ public class RedisScheduler {
         }
         messages.sort((Message a, Message b) -> a.getStartTime().compareTo(b.getStartTime()));
 
-        messageRepository.saveAll(messages);
+        messageService.saveAll(messages);
         deleteRedisData(messages.size());
         long end = System.currentTimeMillis();
 
@@ -49,7 +44,7 @@ public class RedisScheduler {
 
     private void deleteRedisData(int size) {
         while (size > 0) {
-            listOperations.leftPop("messages");
+            messageService.leftPop("messages");
             size--;
         }
     }
