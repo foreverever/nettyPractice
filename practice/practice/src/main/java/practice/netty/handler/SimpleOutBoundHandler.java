@@ -8,8 +8,8 @@ public abstract class SimpleOutBoundHandler<T> extends ChannelOutboundHandlerAda
 
     @Override
     public void write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise) {
-        write0(ctx, (String) msg, promise);
+        write0(ctx, (T) msg, promise);
     }
 
-    protected abstract void write0(ChannelHandlerContext ctx, String msg, ChannelPromise promise);
+    protected abstract void write0(ChannelHandlerContext ctx, T msg, ChannelPromise promise);
 }

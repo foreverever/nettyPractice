@@ -16,7 +16,7 @@ import static practice.support.NettyUtils.isNotNumber;
 public class PacketLengthCheckDecoder extends ByteToMessageDecoder {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    private int decodeCnt = 0;
+    private static final String WRONG_HEADER = "wrhc";
 
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf byteBuf, List<Object> list) throws Exception {
@@ -38,14 +38,12 @@ public class PacketLengthCheckDecoder extends ByteToMessageDecoder {
         logger.debug("data length : {}", packetLength);
         list.add(byteBuf.readBytes(packetLength));
         byteBuf.markReaderIndex();  //현재 readIndex를 마크, resetReaderIndex()시 마크된 index으로 이동
-        decodeCnt++;
-        logger.debug("decodeCnt : {}", decodeCnt);
     }
 
     int calcPacketLength(ByteBuf byteBuf, ChannelHandlerContext ctx) throws Exception {
         String length = byteBuf.readBytes(PACKET_LENGTH_FIELD).toString(Charset.defaultCharset());
         if (isNotNumber(length)) {
-            exceptionCaught(ctx, new HeaderContentException("wrhc"));    //wrong header content -> header(body length)를 해석할 수 없음
+            exceptionCaught(ctx, new HeaderContentException(WRONG_HEADER));    //wrong header content -> header(body length)를 해석할 수 없음
         }
         return Integer.parseInt(length);
     }

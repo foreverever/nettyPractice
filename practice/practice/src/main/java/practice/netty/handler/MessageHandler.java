@@ -12,7 +12,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import practice.domain.redis.MessageOfRedis;
-import practice.exception.DataContentException;
 import practice.service.MessageService;
 
 import java.net.InetSocketAddress;
@@ -29,6 +28,7 @@ public class MessageHandler extends SimpleChannelInboundHandler<String> {
     Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private final ChannelGroup channels = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
+    private static final String WRONG_DATA = "wrdc";
 
     @Autowired
     private MessageService messageService;
@@ -51,11 +51,6 @@ public class MessageHandler extends SimpleChannelInboundHandler<String> {
     //데이터 로직 처리
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, String content) {
-        if (isNotNumber(content)) {
-            exceptionCaught(ctx, new DataContentException("wrdc"));    //wrong data content -> data를 해석할 수 없는 경우(문자 포함 한 경우)
-            return;
-        }
-
         MessageOfRedis messageOfRedis;
 
         if (content.contains(FAKE.name())) {
