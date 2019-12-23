@@ -20,23 +20,23 @@ public class MessageOfRedis implements Serializable {
 
     @JsonFormat(pattern = "uuuu-MM-dd'T'HH:mm:ss.SSS")
     @DateTimeFormat(pattern = "uuuu-MM-dd'T'HH:mm:ss.SSS")
-    private LocalDateTime createTime;
+    private LocalDateTime startTime;
 
     @JsonFormat(pattern = "uuuu-MM-dd'T'HH:mm:ss.SSS")
     @DateTimeFormat(pattern = "uuuu-MM-dd'T'HH:mm:ss.SSS")
-    private LocalDateTime processingTime;
+    private LocalDateTime endTime;
 
-    public MessageOfRedis(String redisKey, String requestIpAddress, int content, LocalDateTime createTime) {
+    public MessageOfRedis(String redisKey, String requestIpAddress, int content, LocalDateTime startTime) {
         this.redisKey = redisKey;
         this.requestIpAddress = requestIpAddress;
         this.content = content;
-        this.createTime = createTime;
+        this.startTime = startTime;
     }
 
-    public MessageOfRedis(String requestIpAddress, int content, LocalDateTime createTime) {
+    public MessageOfRedis(String requestIpAddress, int content, LocalDateTime startTime) {
         this.requestIpAddress = requestIpAddress;
         this.content = content;
-        this.createTime = createTime;
+        this.startTime = startTime;
     }
 
     public MessageOfRedis(String requestIpAddress, int content) {
@@ -70,20 +70,20 @@ public class MessageOfRedis implements Serializable {
         this.content = content;
     }
 
-    public LocalDateTime getCreateTime() {
-        return createTime;
+    public LocalDateTime getStartTime() {
+        return startTime;
     }
 
-    public void setCreateTime(LocalDateTime createTime) {
-        this.createTime = createTime;
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
     }
 
-    public LocalDateTime getProcessingTime() {
-        return processingTime;
+    public LocalDateTime getEndTime() {
+        return endTime;
     }
 
-    public void setProcessingTime(LocalDateTime processingTime) {
-        this.processingTime = processingTime;
+    public void setEndTime(LocalDateTime endTime) {
+        this.endTime = endTime;
     }
 
     @Override
@@ -94,13 +94,13 @@ public class MessageOfRedis implements Serializable {
         return content == that.content &&
                 Objects.equals(redisKey, that.redisKey) &&
                 Objects.equals(requestIpAddress, that.requestIpAddress) &&
-                Objects.equals(createTime, that.createTime) &&
-                Objects.equals(processingTime, that.processingTime);
+                Objects.equals(startTime, that.startTime) &&
+                Objects.equals(endTime, that.endTime);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(redisKey, requestIpAddress, content, createTime, processingTime);
+        return Objects.hash(redisKey, requestIpAddress, content, startTime, endTime);
     }
 
     @Override
@@ -109,12 +109,12 @@ public class MessageOfRedis implements Serializable {
                 "redisKey='" + redisKey + '\'' +
                 ", requestIpAddress='" + requestIpAddress + '\'' +
                 ", content=" + content +
-                ", createTime=" + createTime +
-                ", processingTime=" + processingTime +
+                ", startTime=" + startTime +
+                ", endTime=" + endTime +
                 '}';
     }
 
     public Message createMessage() {
-        return new Message(requestIpAddress, content, createTime, processingTime);
+        return new Message(requestIpAddress, content, startTime, endTime);
     }
 }

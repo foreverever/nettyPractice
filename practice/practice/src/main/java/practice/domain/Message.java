@@ -1,7 +1,9 @@
 package practice.domain;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import org.hibernate.engine.jdbc.Size;
 import org.springframework.format.annotation.DateTimeFormat;
+import sun.security.util.Length;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -20,17 +22,19 @@ public class Message {
 
     @JsonFormat(pattern = "uuuu-MM-dd'T'HH:mm:ss.SSS")
     @DateTimeFormat(pattern = "uuuu-MM-dd'T'HH:mm:ss.SSS")
-    private LocalDateTime createTime;
+    @Column(columnDefinition = "TIMESTAMP(3)")
+    private LocalDateTime startTime;
 
     @JsonFormat(pattern = "uuuu-MM-dd'T'HH:mm:ss.SSS")
     @DateTimeFormat(pattern = "uuuu-MM-dd'T'HH:mm:ss.SSS")
-    private LocalDateTime processingTime;
+    @Column(columnDefinition = "TIMESTAMP(3)")
+    private LocalDateTime endTime;
 
-    public Message(String requestIpAddress, int content, LocalDateTime createTime, LocalDateTime processingTime) {
+    public Message(String requestIpAddress, int content, LocalDateTime startTime, LocalDateTime endTime) {
         this.requestIpAddress = requestIpAddress;
         this.content = content;
-        this.createTime = createTime;
-        this.processingTime = processingTime;
+        this.startTime = startTime;
+        this.endTime = endTime;
 
     }
 
@@ -58,20 +62,20 @@ public class Message {
         this.content = content;
     }
 
-    public LocalDateTime getCreateTime() {
-        return createTime;
+    public LocalDateTime getStartTime() {
+        return startTime;
     }
 
-    public void setCreateTime(LocalDateTime createTime) {
-        this.createTime = createTime;
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
     }
 
-    public LocalDateTime getProcessingTime() {
-        return processingTime;
+    public LocalDateTime getEndTime() {
+        return endTime;
     }
 
-    public void setProcessingTime(LocalDateTime processingTime) {
-        this.processingTime = processingTime;
+    public void setEndTime(LocalDateTime endTime) {
+        this.endTime = endTime;
     }
 
     @Override
@@ -82,13 +86,13 @@ public class Message {
         return id == message.id &&
                 content == message.content &&
                 Objects.equals(requestIpAddress, message.requestIpAddress) &&
-                Objects.equals(createTime, message.createTime) &&
-                Objects.equals(processingTime, message.processingTime);
+                Objects.equals(startTime, message.startTime) &&
+                Objects.equals(endTime, message.endTime);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, requestIpAddress, content, createTime, processingTime);
+        return Objects.hash(id, requestIpAddress, content, startTime, endTime);
     }
 
     @Override
@@ -97,8 +101,8 @@ public class Message {
                 "id=" + id +
                 ", requestIpAddress='" + requestIpAddress + '\'' +
                 ", content=" + content +
-                ", createDate=" + createTime +
-                ", processingTime=" + processingTime +
+                ", startTime=" + startTime +
+                ", endTime=" + endTime +
                 '}';
     }
 }

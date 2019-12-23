@@ -12,6 +12,7 @@ import practice.domain.redis.MessageOfRedis;
 import practice.domain.MessageRepository;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -42,6 +43,7 @@ public class RedisScheduler {
             keys.add(messageOfRedis.getRedisKey());
             logger.debug("messageAll : {}", messageOfRedis.toString());
         }
+        messages.sort((Message a, Message b) -> a.getStartTime().compareTo(b.getStartTime()));
 
         messageRepository.saveAll(messages);
         deleteRedisData(keys);

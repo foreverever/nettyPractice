@@ -18,7 +18,7 @@ public class MessageService {
     private RedisTemplate<String, String> redisRedisTemplate;
 
     public void add(MessageOfRedis messageOfRedis) {
-        messageOfRedis.setProcessingTime(LocalDateTime.now());
+        messageOfRedis.setEndTime(LocalDateTime.now());
         redisRepository.save(messageOfRedis);
 
         if (!redisRedisTemplate.hasKey("newCount")) {
