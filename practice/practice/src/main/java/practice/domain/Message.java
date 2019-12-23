@@ -1,57 +1,54 @@
 package practice.domain;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import org.hibernate.engine.jdbc.Size;
 import org.springframework.format.annotation.DateTimeFormat;
-import sun.security.util.Length;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-@Entity
+@Entity(name = "traffic")
 public class Message {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private long num;
     @Column
-    private String requestIpAddress;
+    private String ip;
     @Column
     private int content;
 
-    @JsonFormat(pattern = "uuuu-MM-dd'T'HH:mm:ss.SSS")
-    @DateTimeFormat(pattern = "uuuu-MM-dd'T'HH:mm:ss.SSS")
-    @Column(columnDefinition = "TIMESTAMP(3)")
+    @JsonFormat(pattern = "uuuu-MM-dd'T'HH:mm:ss")
+    @DateTimeFormat(pattern = "uuuu-MM-dd'T'HH:mm:ss")
+    @Column(columnDefinition = "TIMESTAMP", name = "startTime")
     private LocalDateTime startTime;
 
-    @JsonFormat(pattern = "uuuu-MM-dd'T'HH:mm:ss.SSS")
-    @DateTimeFormat(pattern = "uuuu-MM-dd'T'HH:mm:ss.SSS")
-    @Column(columnDefinition = "TIMESTAMP(3)")
+    @JsonFormat(pattern = "uuuu-MM-dd'T'HH:mm:ss")
+    @DateTimeFormat(pattern = "uuuu-MM-dd'T'HH:mm:ss")
+    @Column(columnDefinition = "TIMESTAMP", name = "endTime")
     private LocalDateTime endTime;
 
-    public Message(String requestIpAddress, int content, LocalDateTime startTime, LocalDateTime endTime) {
-        this.requestIpAddress = requestIpAddress;
+    public Message(String ip, int content, LocalDateTime startTime, LocalDateTime endTime) {
+        this.ip = ip;
         this.content = content;
         this.startTime = startTime;
         this.endTime = endTime;
-
     }
 
-    public long getId() {
-        return id;
+    public long getNum() {
+        return num;
     }
 
-    public void setId(long id) {
-        this.id = id;
+    public void setNum(long num) {
+        this.num = num;
     }
 
-    public String getRequestIpAddress() {
-        return requestIpAddress;
+    public String getIp() {
+        return ip;
     }
 
-    public void setRequestIpAddress(String requestIpAddress) {
-        this.requestIpAddress = requestIpAddress;
+    public void setIp(String ip) {
+        this.ip = ip;
     }
 
     public int getContent() {
@@ -83,23 +80,23 @@ public class Message {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Message message = (Message) o;
-        return id == message.id &&
+        return num == message.num &&
                 content == message.content &&
-                Objects.equals(requestIpAddress, message.requestIpAddress) &&
+                Objects.equals(ip, message.ip) &&
                 Objects.equals(startTime, message.startTime) &&
                 Objects.equals(endTime, message.endTime);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, requestIpAddress, content, startTime, endTime);
+        return Objects.hash(num, ip, content, startTime, endTime);
     }
 
     @Override
     public String toString() {
         return "Message{" +
-                "id=" + id +
-                ", requestIpAddress='" + requestIpAddress + '\'' +
+                "id=" + num +
+                ", requestIpAddress='" + ip + '\'' +
                 ", content=" + content +
                 ", startTime=" + startTime +
                 ", endTime=" + endTime +
