@@ -11,7 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import practice.domain.redis.MessageOfRedis;
+import practice.domain.Message;
 import practice.service.MessageService;
 
 import java.net.InetSocketAddress;
@@ -51,17 +51,17 @@ public class MessageHandler extends SimpleChannelInboundHandler<String> {
     //데이터 로직 처리
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, String content) {
-        MessageOfRedis messageOfRedis;
+        Message message;
 
         if (content.contains(FAKE.name())) {
             String fakeContent = content.substring(FAKE_COUNT_FIELD, FAKE_COUNT_FIELD + 4);
-            messageOfRedis = new MessageOfRedis(makeRandomIpAddress(new Random()), Integer.parseInt(fakeContent), LocalDateTime.now());
+            message = new Message(makeRandomIpAddress(new Random()), Integer.parseInt(fakeContent), LocalDateTime.now());
         } else {
-            messageOfRedis = new MessageOfRedis(findIpAddress(ctx.channel()), Integer.parseInt(content), LocalDateTime.now());
+            message = new Message(findIpAddress(ctx.channel()), Integer.parseInt(content), LocalDateTime.now());
         }
-        logger.debug("messageOfRedis information : {}", messageOfRedis);
+        logger.debug("messageOfRedis information : {}", message);
         ctx.write(PACKET_LENGTH + OACK.name());
-        messageService.add(messageOfRedis);
+        messageService.add(message);
     }
 
     @Override

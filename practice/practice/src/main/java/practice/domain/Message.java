@@ -4,11 +4,12 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Entity
-public class Message {
+public class Message implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,6 +34,12 @@ public class Message {
         this.content = content;
         this.startTime = startTime;
         this.endTime = endTime;
+    }
+
+    public Message(String ip, int content, LocalDateTime startTime) {
+        this.ip = ip;
+        this.content = content;
+        this.startTime = startTime;
     }
 
     public long getNum() {

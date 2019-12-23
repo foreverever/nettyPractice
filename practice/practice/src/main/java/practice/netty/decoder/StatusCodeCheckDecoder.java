@@ -4,12 +4,9 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageDecoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import practice.domain.redis.RedisRepository;
 import practice.exception.DataContentException;
 import practice.exception.DataRangeException;
 import practice.exception.StatusCodeException;
-import practice.service.MessageService;
 import practice.support.StatusCode;
 
 import java.util.List;
