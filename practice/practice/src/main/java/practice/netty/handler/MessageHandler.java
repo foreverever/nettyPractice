@@ -12,13 +12,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import practice.domain.redis.MessageOfRedis;
+import practice.exception.DataContentException;
 import practice.service.MessageService;
 
 import java.net.InetSocketAddress;
 import java.time.LocalDateTime;
+import java.util.Random;
 
-import static practice.support.StatusCode.NACK;
-import static practice.support.StatusCode.OACK;
+import static practice.support.NettyUtils.*;
+import static practice.support.StatusCode.*;
 
 @Component
 @ChannelHandler.Sharable
@@ -27,9 +29,6 @@ public class MessageHandler extends SimpleChannelInboundHandler<String> {
     Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private final ChannelGroup channels = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
-    private static final String PACKET_LENGTH = "0004";
-
-    private int handlerCnt = 0;
 
     @Autowired
     private MessageService messageService;
@@ -37,8 +36,7 @@ public class MessageHandler extends SimpleChannelInboundHandler<String> {
     //소켓채널이 최초 활성화 되었을 때(연결되면) 발생하는 이벤트
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
-        System.out.println("Active!!!!!!!!!!!!!!!!");
-        ctx.write("0004OACK");
+        ctx.write(PACKET_LENGTH + OACK.name());
         channels.add(ctx.channel());
     }
 
@@ -53,12 +51,20 @@ public class MessageHandler extends SimpleChannelInboundHandler<String> {
     //데이터 로직 처리
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, String content) {
-        System.out.println("startTime" + LocalDateTime.now());
-        System.out.println(content);
-        callCnt();
-        MessageOfRedis messageOfRedis = new MessageOfRedis(findIpAddress(ctx.channel()), Integer.parseInt(content), LocalDateTime.now());
-        logger.debug("messageOfRedis information : {}", messageOfRedis);
+        if (isNotNumber(content)) {
+            exceptionCaught(ctx, new DataContentException("wrdc"));    //wrong data content -> data를 해석할 수 없는 경우(문자 포함 한 경우)
+            return;
+        }
 
+        MessageOfRedis messageOfRedis;
+
+        if (content.contains(FAKE.name())) {
+            String fakeContent = content.substring(FAKE_COUNT_FIELD, FAKE_COUNT_FIELD + 4);
+            messageOfRedis = new MessageOfRedis(makeRandomIpAddress(new Random()), Integer.parseInt(fakeContent), LocalDateTime.now());
+        } else {
+            messageOfRedis = new MessageOfRedis(findIpAddress(ctx.channel()), Integer.parseInt(content), LocalDateTime.now());
+        }
+        logger.debug("messageOfRedis information : {}", messageOfRedis);
         ctx.write(PACKET_LENGTH + OACK.name());
         messageService.add(messageOfRedis);
     }
@@ -66,11 +72,11 @@ public class MessageHandler extends SimpleChannelInboundHandler<String> {
     @Override
     public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
         super.channelReadComplete(ctx);
-        logger.debug("messageHandlerCnt : {}", handlerCnt);
     }
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
+        logger.debug("exceptionCaught is called!!!");
         String response = NACK.name() + cause.getMessage();
         //todo 하드코딩 수정필요
         response = "00" + response.length() + response;
@@ -84,7 +90,15 @@ public class MessageHandler extends SimpleChannelInboundHandler<String> {
         return socketAddress.getAddress().getHostAddress();
     }
 
-    public synchronized void callCnt() {
-        handlerCnt++;
+    private String makeRandomIpAddress(Random random) {
+        StringBuffer fakeIpAddress = new StringBuffer();
+        fakeIpAddress.append(192).append('.')
+                .append(random.nextInt(IP_ADDRESS_RANGE))
+                .append('.')
+                .append(random.nextInt(IP_ADDRESS_RANGE))
+                .append('.')
+                .append(random.nextInt(IP_ADDRESS_RANGE));
+
+        return fakeIpAddress.toString();
     }
 }

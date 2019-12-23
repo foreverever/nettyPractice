@@ -5,15 +5,16 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import practice.exception.NotValidLengthFiled;
+import practice.exception.HeaderContentException;
 
 import java.nio.charset.Charset;
 import java.util.List;
 
+import static practice.support.NettyUtils.PACKET_LENGTH_FIELD;
+import static practice.support.NettyUtils.isNotNumber;
+
 public class PacketLengthCheckDecoder extends ByteToMessageDecoder {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
-
-    public static final int PACKET_LENGTH_FIELD = 4;
 
     private int decodeCnt = 0;
 
@@ -43,18 +44,9 @@ public class PacketLengthCheckDecoder extends ByteToMessageDecoder {
 
     int calcPacketLength(ByteBuf byteBuf, ChannelHandlerContext ctx) throws Exception {
         String length = byteBuf.readBytes(PACKET_LENGTH_FIELD).toString(Charset.defaultCharset());
-        if (isNotValidLength(length)) {
-            exceptionCaught(ctx, new NotValidLengthFiled("NotValidDataLength"));
+        if (isNotNumber(length)) {
+            exceptionCaught(ctx, new HeaderContentException("wrhc"));    //wrong header content -> header(body length)를 해석할 수 없음
         }
         return Integer.parseInt(length);
-    }
-
-    private boolean isNotValidLength(String length) {
-        try {
-            Integer.parseInt(length);
-            return false;
-        } catch (NumberFormatException e) {
-            return true;
-        }
     }
 }
