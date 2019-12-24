@@ -39,7 +39,7 @@ public class RedisScheduler {
         deleteRedisData(messages.size());
         long end = System.currentTimeMillis();
 
-        logger.debug("레디스 셀렉트 시간 : " + (end - start) / 1000.0);
+        logger.debug("레디스 RDB 동기화 시간 : " + (end - start) / 1000.0);
     }
 
     private void deleteRedisData(int size) {

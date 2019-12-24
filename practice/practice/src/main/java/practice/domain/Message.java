@@ -47,6 +47,9 @@ public class Message implements Serializable {
         this(0L, ip, content, LocalDateTime.now(), LocalDateTime.now());
     }
 
+    public Message() {
+    }
+
     public long getNum() {
         return num;
     }
