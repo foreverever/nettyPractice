@@ -12,7 +12,7 @@ public class StatusCodeCheckDecoderTest {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Test
-    public void makeRandomIpAddress() {
+    public void 랜덤_IP_주소_조작() {
         StringBuffer fakeIpAddress = new StringBuffer();
         fakeIpAddress.append(192).append('.')
                 .append(random.nextInt(256))

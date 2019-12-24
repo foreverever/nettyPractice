@@ -19,9 +19,9 @@ public class StatusCodeCheckDecoder extends MessageToMessageDecoder<String> {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private static final int STATUS_CODE_FIELD = 4;
-    private static final String WRONG_STATUS_CODE = "wrsc";
-    private static final String WRONG_DATA = "wrdc";
-    private static final String OUT_OF_RANGE_DATA = "orda";
+    private static final String WRONG_STATUS_CODE = "WRSC";
+    private static final String WRONG_DATA = "WRDC";
+    private static final String OUT_OF_RANGE_DATA = "ORDA";
 
     @Override
     protected void decode(ChannelHandlerContext ctx, String packet, List<Object> list) throws Exception {

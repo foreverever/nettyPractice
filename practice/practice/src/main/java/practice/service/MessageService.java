@@ -25,9 +25,9 @@ public class MessageService {
     private MessageRepository messageRepository;
 
     @Transactional
-    public void add(Message message) {
+    public void add(String key, Message message) {
         message.setEndTime(LocalDateTime.now());
-        listOperations.rightPush("messages", message);   //value 타입을 list로 바꿈
+        listOperations.rightPush(key, message);   //value 타입을 list로 바꿈
 
         if (redisRedisTemplate.hasKey("newCount") != null) {
             redisRedisTemplate.opsForValue().set("newCount", "0");
@@ -51,5 +51,14 @@ public class MessageService {
     @Transactional
     public void saveAll(List<Message> messages) {
         messageRepository.saveAll(messages);
+    }
+
+    public void deleteAll(String key) {
+        long totalSize = listOperations.size(key);
+
+        while (totalSize > 0) {
+            listOperations.leftPop(key);
+            totalSize--;
+        }
     }
 }

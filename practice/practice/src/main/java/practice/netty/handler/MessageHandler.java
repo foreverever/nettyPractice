@@ -28,7 +28,7 @@ public class MessageHandler extends SimpleChannelInboundHandler<String> {
     Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private final ChannelGroup channels = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
-    private static final String WRONG_DATA = "wrdc";
+    private static final String REDIS_KEY = "messages";
 
     @Autowired
     private MessageService messageService;
@@ -61,7 +61,7 @@ public class MessageHandler extends SimpleChannelInboundHandler<String> {
         }
         logger.debug("messageOfRedis information : {}", message);
         ctx.write(PACKET_LENGTH + OACK.name());
-        messageService.add(message);
+        messageService.add(REDIS_KEY, message);
     }
 
     @Override

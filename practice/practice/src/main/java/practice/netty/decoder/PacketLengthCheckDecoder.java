@@ -16,7 +16,7 @@ import static practice.support.NettyUtils.isNotNumber;
 public class PacketLengthCheckDecoder extends ByteToMessageDecoder {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    private static final String WRONG_HEADER = "wrhc";
+    private static final String WRONG_HEADER = "WRHC";
 
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf byteBuf, List<Object> list) throws Exception {

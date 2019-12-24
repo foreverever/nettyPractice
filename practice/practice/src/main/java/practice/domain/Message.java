@@ -29,7 +29,8 @@ public class Message implements Serializable {
     @Column(columnDefinition = "TIMESTAMP", name = "endTime")
     private LocalDateTime endTime;
 
-    public Message(String ip, int content, LocalDateTime startTime, LocalDateTime endTime) {
+    public Message(long num, String ip, int content, LocalDateTime startTime, LocalDateTime endTime) {
+        this.num = num;
         this.ip = ip;
         this.content = content;
         this.startTime = startTime;
@@ -40,6 +41,10 @@ public class Message implements Serializable {
         this.ip = ip;
         this.content = content;
         this.startTime = startTime;
+    }
+
+    public Message(String ip, int content) {
+        this(0L, ip, content, LocalDateTime.now(), LocalDateTime.now());
     }
 
     public long getNum() {
