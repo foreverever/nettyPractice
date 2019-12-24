@@ -8,7 +8,7 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-@Entity
+@Entity(name = "traffic")
 public class Message implements Serializable {
 
     @Id

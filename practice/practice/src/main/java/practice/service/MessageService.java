@@ -14,6 +14,7 @@ import java.util.List;
 
 @Component
 public class MessageService {
+    private static final String NEW_COUNT = "newCount";
 
     @Autowired
     private RedisTemplate<String, String> redisRedisTemplate;
@@ -28,10 +29,10 @@ public class MessageService {
         message.setEndTime(LocalDateTime.now());
         listOperations.rightPush(key, message);   //value 타입을 list로 바꿈
 
-        if (redisRedisTemplate.hasKey("newCount") != null) {
-            redisRedisTemplate.opsForValue().set("newCount", "0");
+        if (redisRedisTemplate.hasKey(NEW_COUNT) == null) {
+            redisRedisTemplate.opsForValue().set(NEW_COUNT, "0");
         }
-        redisRedisTemplate.opsForValue().increment("newCount", 1L);
+        redisRedisTemplate.opsForValue().increment(NEW_COUNT, 1L);
     }
 
     public List<Message> range(String key, long start, long last) {
