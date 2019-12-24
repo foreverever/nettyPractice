@@ -24,7 +24,6 @@ public class MessageService {
     @Autowired
     private MessageRepository messageRepository;
 
-    @Transactional
     public void add(String key, Message message) {
         message.setEndTime(LocalDateTime.now());
         listOperations.rightPush(key, message);   //value 타입을 list로 바꿈
@@ -43,12 +42,10 @@ public class MessageService {
         return listOperations.size(key);
     }
 
-    @Transactional
     public void leftPop(String key) {
         listOperations.leftPop(key);
     }
 
-    @Transactional
     public void saveAll(List<Message> messages) {
         messageRepository.saveAll(messages);
     }
