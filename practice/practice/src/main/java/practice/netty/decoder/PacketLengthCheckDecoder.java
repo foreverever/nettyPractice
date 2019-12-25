@@ -47,4 +47,13 @@ public class PacketLengthCheckDecoder extends ByteToMessageDecoder {
         }
         return Integer.parseInt(length);
     }
+    
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        logger.debug("decoder exceptionCaught is called!!!");
+        String response = NACK.name() + cause.getMessage();
+        response = "000" + response.length() + response;
+        logger.error(cause.getMessage(), cause);
+        ctx.writeAndFlush(response);
+    }
 }
