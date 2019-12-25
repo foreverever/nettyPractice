@@ -59,4 +59,13 @@ public class StatusCodeCheckDecoder extends MessageToMessageDecoder<String> {
         int number = Integer.parseInt(content);
         return number <= 0 || number >= 10;
     }
+    
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        logger.debug("decoder exceptionCaught is called!!!");
+        String response = NACK.name() + cause.getMessage();
+        response = "000" + response.length() + response;
+        logger.error(cause.getMessage(), cause);
+        ctx.writeAndFlush(response);
+    }
 }
