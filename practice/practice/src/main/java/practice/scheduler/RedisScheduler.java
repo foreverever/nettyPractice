@@ -9,7 +9,6 @@ import org.springframework.stereotype.Component;
 import practice.domain.Message;
 import practice.service.MessageService;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Component
@@ -26,13 +25,7 @@ public class RedisScheduler {
         long start = System.currentTimeMillis();
         logger.debug("스케줄러 작동!!!!");
 
-        List<Message> messagesOfRedis = messageService.range("messages", 0, messageService.size("messages"));
-        List<Message> messages = new ArrayList<>();
-
-        for (Message message : messagesOfRedis) {
-            messages.add(message);
-            logger.debug("messageAll : {}", message.toString());
-        }
+        List<Message> messages = messageService.range("messages", 0, messageService.size("messages"));
         messages.sort((Message a, Message b) -> a.getStartTime().compareTo(b.getStartTime()));
 
         messageService.saveAll(messages);

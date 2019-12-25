@@ -37,7 +37,7 @@ public class PerformanceTest {
 
     @Test
     public void Redis에서_데이터_조회_1000개_리스트() {
-        messageService.range("messages", 0, 1000);
-        assertThat(messageService.size("messages")).isEqualTo(1000);
+        List<Message> messages = messageService.range("messages", 0, 1000);
+        assertThat(messages.size()).isEqualTo(1000);
     }
 }

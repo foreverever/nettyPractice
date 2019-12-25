@@ -49,7 +49,7 @@ public class StatusCodeCheckDecoder extends MessageToMessageDecoder<String> {
         else if (statusCode == NACK) {
             exceptionCaught(ctx, new StatusCodeException(WRONG_STATUS_CODE)); //wrong statusCode content -> statusCode를 해석할 수 없음
         }
-        //조작 클라이언트인 경우 FAKE/0002
+        //조작 클라이언트인 경우 FAKE/000X
         else if (statusCode == FAKE) {
             list.add(packet);
         }

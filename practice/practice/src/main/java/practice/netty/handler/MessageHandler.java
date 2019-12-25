@@ -74,10 +74,10 @@ public class MessageHandler extends SimpleChannelInboundHandler<String> {
         logger.debug("exceptionCaught is called!!!");
         String response = NACK.name() + cause.getMessage();
         //todo 하드코딩 수정필요
-        response = "00" + response.length() + response;
+        response = "000" + response.length() + response;
         logger.error(cause.getMessage(), cause);
         ctx.writeAndFlush(response);
-        ctx.close();
+//        ctx.close();
     }
 
     private String findIpAddress(Channel channel) {

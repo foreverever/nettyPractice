@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.ListOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 import practice.domain.Message;
 import practice.domain.MessageRepository;
 
@@ -28,11 +27,12 @@ public class MessageService {
     public void add(String key, Message message) {
         message.setEndTime(LocalDateTime.now());
         listOperations.rightPush(key, message);   //value 타입을 list로 바꿈
+        String cntKey = message.calcSecond();
 
-        if (redisRedisTemplate.hasKey(NEW_COUNT) == null) {
-            redisRedisTemplate.opsForValue().set(NEW_COUNT, "0");
+        if (redisRedisTemplate.hasKey(cntKey) == null) {
+            redisRedisTemplate.opsForValue().set(cntKey, "0");
         }
-        redisRedisTemplate.opsForValue().increment(NEW_COUNT, 1L);
+        redisRedisTemplate.opsForValue().increment(cntKey, 1L);
     }
 
     public List<Message> range(String key, long start, long last) {
@@ -40,7 +40,10 @@ public class MessageService {
     }
 
     public long size(String key) {
-        return listOperations.size(key);
+        if (redisRedisTemplate.hasKey(key) != null) {
+            return listOperations.size(key);
+        }
+        return 0;
     }
 
     public void leftPop(String key) {

@@ -25,7 +25,9 @@ public class MessageServiceTest {
 
     @Before
     public void setUp() throws Exception {
-        messageService.deleteAll(TEST_KEY);
+        if (messageService.size(TEST_KEY) != 0) {
+            messageService.deleteAll(TEST_KEY);
+        }
         messageService.add(TEST_KEY, TEST_MESSAGE);
     }
 

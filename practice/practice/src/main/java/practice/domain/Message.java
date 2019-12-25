@@ -8,7 +8,7 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-@Entity(name = "traffic")
+@Entity
 public class Message implements Serializable {
 
     @Id
@@ -116,5 +116,9 @@ public class Message implements Serializable {
                 ", startTime=" + startTime +
                 ", endTime=" + endTime +
                 '}';
+    }
+
+    public String calcSecond() {
+        return Integer.toString(endTime.getSecond() % 10);
     }
 }
