@@ -15,6 +15,7 @@ import practice.domain.Message;
 import practice.service.MessageService;
 
 import java.net.InetSocketAddress;
+import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.Random;
 
@@ -29,6 +30,7 @@ public class MessageHandler extends SimpleChannelInboundHandler<String> {
 
     private final ChannelGroup channels = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
     private static final String REDIS_KEY = "messages";
+    private final static Random GENERATOR = new SecureRandom();
 
     @Autowired
     private MessageService messageService;
@@ -55,12 +57,18 @@ public class MessageHandler extends SimpleChannelInboundHandler<String> {
 
         if (content.contains(FAKE.name())) {
             String fakeContent = content.substring(FAKE_COUNT_FIELD, FAKE_COUNT_FIELD + 4);
-            message = new Message(makeRandomIpAddress(new Random()), Integer.parseInt(fakeContent), LocalDateTime.now());
+            message = Message.makeData(makeRandomIpAddress(), Integer.parseInt(fakeContent), LocalDateTime.now());
         } else {
-            message = new Message(findIpAddress(ctx.channel()), Integer.parseInt(content), LocalDateTime.now());
+            message = Message.makeData(findIpAddress(ctx.channel()), Integer.parseInt(content), LocalDateTime.now());
         }
         logger.debug("messageOfRedis information : {}", message);
         ctx.write(PACKET_LENGTH + OACK.name());
+
+        /*하나의 키를 사용하기보다는 키를 분산할 수 있는 방법을 생각해보면 좋아요 */
+        /*방법 예시
+            Sharding 생각해보기
+            키 단위를 재생각
+         */
         messageService.add(REDIS_KEY, message);
     }
 
@@ -85,15 +93,18 @@ public class MessageHandler extends SimpleChannelInboundHandler<String> {
         return socketAddress.getAddress().getHostAddress();
     }
 
-    private String makeRandomIpAddress(Random random) {
-        StringBuffer fakeIpAddress = new StringBuffer();
+    /*
+    Random, SecureRandom 차이점 알아보면 좋아요
+    Random 객체는 매번 생성하지 않아도 되요
+    */
+    private String makeRandomIpAddress() {
+        StringBuilder fakeIpAddress = new StringBuilder();
         fakeIpAddress.append(192).append('.')
-                .append(random.nextInt(IP_ADDRESS_RANGE))
+                .append(GENERATOR.nextInt(IP_ADDRESS_RANGE))
                 .append('.')
-                .append(random.nextInt(IP_ADDRESS_RANGE))
+                .append(GENERATOR.nextInt(IP_ADDRESS_RANGE))
                 .append('.')
-                .append(random.nextInt(IP_ADDRESS_RANGE));
-
+                .append(GENERATOR.nextInt(IP_ADDRESS_RANGE));
         return fakeIpAddress.toString();
     }
 }

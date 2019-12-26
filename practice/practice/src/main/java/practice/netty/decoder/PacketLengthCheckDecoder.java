@@ -12,6 +12,7 @@ import java.util.List;
 
 import static practice.support.NettyUtils.PACKET_LENGTH_FIELD;
 import static practice.support.NettyUtils.isNotNumber;
+import static practice.support.StatusCode.NACK;
 
 public class PacketLengthCheckDecoder extends ByteToMessageDecoder {
     private Logger logger = LoggerFactory.getLogger(this.getClass());

@@ -16,8 +16,8 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 @SpringBootTest
 public class MessageServiceTest {
 
-    private static final Message TEST_MESSAGE = new Message("127.0.0.0", 1);
-    private static final Message TEST_MESSAGE2 = new Message("127.0.0.1", 2);
+    private static final Message TEST_MESSAGE = Message.testData("127.0.0.0", 1);
+    private static final Message TEST_MESSAGE2 = Message.testData("127.0.0.1", 2);
     private static final String TEST_KEY = "testKey";
 
     @Autowired

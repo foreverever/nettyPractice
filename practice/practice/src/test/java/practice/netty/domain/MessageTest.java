@@ -5,7 +5,7 @@ import practice.domain.Message;
 
 public class MessageTest {
 
-    private Message testMessage = new Message("127.0.0.1", 1);
+    private Message testMessage = Message.testData("127.0.0.1", 1);
 
     @Test
     public void 시간_초() {
